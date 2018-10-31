@@ -63,30 +63,30 @@ class Spectrograms(base_model.Model):
 
         wsin,wcos = create_filters(self.d,self.k)
 
-        print '---- Weights ----'
+        print ('---- Weights ----')
         wscale = .0001
         with tf.variable_scope('parameters'):
             w = tf.Variable(wscale*tf.random_normal([d2_x,d2_y,1,k2],seed=999))
-            print 'w',w
+            print ('w',w)
             wavg = self.register_weights(w,'w',average=.9998)
             w2 = tf.Variable(wscale*tf.random_normal([d3_x,d3_y,k2,k3],seed=999))
-            print 'w2',w2
+            print ('w2',w2)
             w2avg = self.register_weights(w2,'w2',average=.9998)
             beta = tf.Variable(wscale*tf.random_normal([num_regions3_x*num_regions3_y*k3,self.m],seed=999))
-            print 'beta',beta
+            print ('beta',beta)
             betaavg = self.register_weights(beta,'beta',average=.9998)
 
-        print '---- Layers ----'
+        print ('---- Layers ----')
         with tf.variable_scope('queued_model'):
             zx = tf.square(tf.nn.conv2d(self.xq,wsin,strides=[1,1,self.stride,1],padding='VALID')) \
                + tf.square(tf.nn.conv2d(self.xq,wcos,strides=[1,1,self.stride,1],padding='VALID'))
-            print 'zx',zx
+            print ('zx',zx)
             z2 = tf.nn.relu(tf.nn.conv2d(tf.log(zx+10e-15),w,strides=[1,1,1,stride_y],padding='VALID',data_format='NCHW'))
-            print 'z2',z2
+            print ('z2',z2)
             z3 = tf.nn.relu(tf.nn.conv2d(z2,w2,strides=[1,1,1,1],padding='VALID',data_format='NCHW'))
-            print 'z3',z3
+            print ('z3',z3)
             y = tf.matmul(tf.reshape(z3,[self.batch_size,num_regions3_x*num_regions3_y*k3]),beta)
-            print 'y',y
+            print ('y',y)
             self.loss = tf.reduce_mean(tf.nn.l2_loss(y-tf.reshape(self.yq,[self.batch_size,self.m])))
 
         with tf.variable_scope('direct_model'):
@@ -104,15 +104,15 @@ def predict(path):
     model = Spectrograms(labels,checkpoint_path='./thickstun/convnet_experimental2_morelvl3/', outputs=1, window=16384, mmap=True,
                          normalize=True, extended_test_set=False, use_mirex=True, init=False, pitch_transforms=5, jitter=.1,
                          restrict=False,isTest=False)
-    print 'finish model loading...'
+    print ('finish model loading...')
     for i,f in enumerate(os.listdir('./thickstun/data/records/')[:]):
         if (not os.path.isfile(path+f)):
             try:
-                print f + ' complete!'
+                print (f + ' complete!')
                 mse_test, Yhat, Y, mse_breakdown, avp_breakdown = model.sample_records(int(f[:-4]), 10000, fixed_stride=512)
                 np.save(path+f,Yhat.T)
-            except Exception as e: print e
-        else: print 'exist'
+            except Exception as e: print (e)
+        else: print ('exist')
 
 
 def main(name):
@@ -122,8 +122,8 @@ def main(name):
     model = Spectrograms(labels,checkpoint_path='./thickstun/convnet_experimental2_morelvl3/', outputs=1, window=16384, mmap=True,
                          normalize=True, extended_test_set=False, use_mirex=True, init=False, pitch_transforms=5, jitter=.1,
                          restrict=False)
-    print 'finish model loading...'
-
+    print ('finish model loading...')
+    print(name)
     data, y = librosa.load('./mp3/'+name,44100)
     np.save('./thickstun/tmp/test.npy',data)
     fd = os.open('./thickstun/tmp/test.npy', os.O_RDONLY)
@@ -133,4 +133,4 @@ def main(name):
     np.save('./thickstun/pitch/'+name[:-4]+'.npy',Yhat)
 
 if __name__ == "__main__":
-    main('angel.mp3')
+    main(sys.argv[1])
