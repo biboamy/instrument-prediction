@@ -39,9 +39,9 @@ This section is for those who want to load the pre-train model directly for real
 ```
 python predict_pitch.py test.mp3
 ```
-Run the prediction python file with the name of the song as the first arg
+Run the prediction python file with the name of the song as the first arg and the model's name as the second arg (model's name can be found in path: data/model/)
 ```
-python prediction.py test.mp3
+python prediction.py test.mp3 residual
 ```
 3. Prediction result will be shown as a picture and stored in the "plot" folder. Prediction raw data will be stored in the "result" folder
 
