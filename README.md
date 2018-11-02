@@ -1,4 +1,7 @@
 # Instrument Recognition
+Paper
+* Yun-Ning Hung and Yi-Hsuan Yang, "[FRAME-LEVEL INSTRUMENT RECOGNITION BY TIMBRE AND PITCH]{http://ismir2018.ircam.fr/doc/pdfs/55_Paper.pdf}", International Society for Music Information Retrieval Conference (ISMIR), 2018
+
 The instrument recognition model in this repo is trained on MusicNet dataset, which contains 7 kinds of instrument - Piano, Violin, Viola, Cello, Clarinet, Horn and Bassoon.
 
 ## File structure
@@ -51,9 +54,6 @@ Training and Evaluation Process
 3. Modify 'config.py' for training and evaluation configuration
 4. Run the python script 'run.py' to start the training
 5. Run the python script 'test_frame.py' to start evaluation
-
-Paper
-* Yun-Ning Hung and Yi-Hsuan Yang, "FRAME-LEVEL INSTRUMENT RECOGNITION BY TIMBRE AND PITCH" to appear at International Society for Music Information Retrieval Conference (ISMIR), 2018
 
 Reference
 Please cite these two papers when you use the MusicNet dataset and the Pitch estimator.
