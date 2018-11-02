@@ -2,7 +2,7 @@
 Paper
 * Yun-Ning Hung and Yi-Hsuan Yang, "[FRAME-LEVEL INSTRUMENT RECOGNITION BY TIMBRE AND PITCH](http://ismir2018.ircam.fr/doc/pdfs/55_Paper.pdf)", International Society for Music Information Retrieval Conference (ISMIR), 2018
 
-The instrument recognition model in this repo is trained on MusicNet dataset, which contains 7 kinds of instrument - Piano, Violin, Viola, Cello, Clarinet, Horn and Bassoon.
+The instrument recognition model is trained on MusicNet dataset, which contains 7 kinds of instrument - Piano, Violin, Viola, Cello, Clarinet, Horn and Bassoon.
 
 ## File structure
 
