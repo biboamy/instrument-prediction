@@ -123,11 +123,12 @@ def load_te_mp3(name,avg, std):
         num = 88
         xdata = np.transpose(f)
         x = [] 
-        length = (int(len(xdata)/s)+1)*s
+        length = int(np.ceil((int(len(xdata)/s)+1)*s))
+
         app = np.zeros((length-xdata.shape[0],xdata.shape[1]))
         xdata = np.concatenate((xdata,app),0)
         for i in range(int(length/s)):
-            data=xdata[i*s:i*s+s]
+            data=xdata[int(i*s):int(i*s+s)]
             x.append(np.transpose(data[:312,:]))
 
         return np.array(x)
@@ -193,7 +194,7 @@ def main(argv):
     #name = argv[0]
     name = argv[1]
 
-    save_dic = torch.load('./data/model/'+model_choose) 
+    save_dic = torch.load('./data/model/'+model_choose,encoding='latin1') 
     va_th = save_dic['va_th']
 
     #load test dataset
@@ -238,7 +239,7 @@ def main(argv):
     plt.yticks(np.arange(8), ('Piano', 'Violin', 'Viola', 'Cello', 'Clarinet', 'Bassoon', 'Horn'))
     plt.imshow(pre,cmap=plt.cm.binary, interpolation='nearest', aspect='auto')
     plt.savefig('plot/'+name+'.png')
-    print 'finish!'
+    print ('finish!')
     
 if __name__ == "__main__":
     main(sys.argv)

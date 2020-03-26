@@ -27,6 +27,7 @@ def get_chunk(i):
 
 for name in os.listdir('result/'):
 	data = np.load('result/'+name)
+	print(data.shape)
 	for idx,i in enumerate(data[:]):
 		start = []
 		end = []

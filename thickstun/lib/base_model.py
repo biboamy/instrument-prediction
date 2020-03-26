@@ -1,12 +1,9 @@
-import os,sys,shutil,mmap
-import cPickle as pickle
-
+import os,mmap
 from time import time
 import numpy as np
-
 import tensorflow as tf
-
 import cf as config
+from tensorflow.python.framework import ops
 
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
@@ -30,7 +27,7 @@ def get_training_sample(d=16384, normalize=True):
     return Xtrain,Ytrain
 
 class Model(object):
-    def __init__(self, labels, checkpoint_path, init=False, window=16384, outputs=1, stride=512, normalize=True, gpu_memory_growth=False, extended_test_set=False, use_mirex=False, pitch_transforms=0, mmap=True, batch_size=150, jitter=0, breakdowns=True, restrict=True, isTest = True):
+    def __init__(self, labels, checkpoint_path, init=False, window=16384, outputs=1, stride=512, normalize=True, gpu_memory_growth=True, extended_test_set=False, use_mirex=False, pitch_transforms=0, mmap=True, batch_size=150, jitter=0, breakdowns=True, restrict=True, isTest = True):
         self.labels = labels
         self.batch_size = batch_size
 
@@ -121,30 +118,31 @@ class Model(object):
             #wavg = tf.Variable(tf.zeros(w.get_shape()))
             self.stats['navg_'+name] = [False,'{:<8.3f}',[]] 
             self.weights['avg_'+name] = wavg
-            self.averages.append(tf.assign(wavg, average*wavg + (1-average)*w))
+            self.averages.append(tf.compat.v1.assign(wavg, average*wavg + (1-average)*w))
             return wavg
         else:
             return None
 
     def define_graph(self):
-        tf.reset_default_graph()
-        tf.set_random_seed(999)
+        ops.reset_default_graph()
+        tf.random.set_seed(999)
 
         self.averages = []
+        tf.compat.v1.disable_eager_execution()
 
-        with tf.variable_scope('data_queue'):
-            self.xb = tf.placeholder(tf.float32, shape=[None,1,self.window+(self.out-1)*self.stride,1])
-            self.yb = tf.placeholder(tf.float32, shape=[None, self.out,self.m])
+        with tf.compat.v1.variable_scope('data_queue'):
+            self.xb = tf.compat.v1.placeholder(tf.float32, shape=[None,1,self.window+(self.out-1)*self.stride,1])
+            self.yb = tf.compat.v1.placeholder(tf.float32, shape=[None, self.out,self.m])
     
-            self.queue = tf.FIFOQueue(capacity=20*self.batch_size,
+            self.queue = tf.queue.FIFOQueue(capacity=20*self.batch_size,
                                  dtypes=[tf.float32,tf.float32],
                                  shapes=[[1,self.window+(self.out-1)*self.stride,1],[self.out,self.m]])
             self.enqueue_op = self.queue.enqueue_many([self.xb, self.yb])
             self.xq, self.yq = self.queue.dequeue_many(self.batch_size)
 
-        with tf.variable_scope('direct_data'):
-            self.xd = tf.placeholder(tf.float32, shape=[None,1,self.window,1])
-            self.yd = tf.placeholder(tf.float32, shape=[None, self.m])
+        with tf.compat.v1.variable_scope('direct_data'):
+            self.xd = tf.compat.v1.placeholder(tf.float32, shape=[None,1,self.window,1])
+            self.yd = tf.compat.v1.placeholder(tf.float32, shape=[None, self.m])
 
         # subclasses must define these quantities
         self.y_direct = None       # model predictions with direct evaluation
@@ -212,11 +210,11 @@ class Model(object):
 
                 self.sess.run(self.enqueue_op, feed_dict={self.xb: xmb, self.yb: ymb})
 
-        init_op = tf.global_variables_initializer()
+        init_op = tf.compat.v1.global_variables_initializer()
 
-        tfconfig = tf.ConfigProto()
-        tfconfig.gpu_options.allow_growth=self.gpu_memory_growth
-        self.sess = tf.Session(config=tfconfig)
+        tfconfig = tf.compat.v1.ConfigProto()
+        tfconfig.gpu_options.allow_growth=True#self.gpu_memory_growth
+        self.sess = tf.compat.v1.Session(config=tfconfig)
 
         self.sess.run(init_op)
         self.precondition()
@@ -231,13 +229,14 @@ class Model(object):
             self.init = False
         else:
             self.restore_checkpoint()
-
+        '''
         # map the dataset
         self.data = dict()
         self.files = []
         if self.isTest: n = 0
         else: n = 340
-
+        '''
+        '''
         #for record in os.listdir(config.records_path):
         for record in os.listdir('./thickstun/data/records/')[:n]:
             if self.mmap:
@@ -250,10 +249,10 @@ class Model(object):
 
                 self.data[int(record[:-4])] = (config.records_path + record,os.fstat(f,fileno()).st_size/sz_float)
                 f.close()
-        
-        self.coord = tf.train.Coordinator()
-        self.qr = tf.train.QueueRunner(self.queue, [tf.py_func(fetch_data,[],[])] * 8)
-        self.workers = self.qr.create_threads(self.sess, coord=self.coord, start=True)
+        '''
+        #self.coord = tf.train.Coordinator()
+        #self.qr = tf.train.QueueRunner(self.queue, [tf.py_func(fetch_data,[],[])] * 8)
+        #self.workers = self.qr.create_threads(self.sess, coord=self.coord, start=True)
 
     def precondition(self):
         pass
@@ -403,8 +402,8 @@ class Model(object):
         subdiv = 100
         subset = X.shape[0]/subdiv
         for j in range(subdiv):
-            Yhat[subset*j:subset*(j+1)] = \
-            self.sess.run(self.y_direct, feed_dict={self.xd: X[subset*j:subset*(j+1)]})
+            Yhat[int(subset*j):int(subset*(j+1))] = \
+            self.sess.run(self.y_direct, feed_dict={self.xd: X[int(subset*j):int(subset*(j+1))]})
 
         return Yhat
 
