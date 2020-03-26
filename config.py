@@ -40,7 +40,7 @@ Different setting in this experiment
 	data_name = 'ex'
 	h_num = 0
 '''
-status = 'har' 
+status = 'inst' 
 data_name = 'ex' 
 model_name = 'SY'  
 isE = False 

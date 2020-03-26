@@ -17,7 +17,6 @@ class Data2Torch(Dataset):
 
         mX = torch.from_numpy(self.X[index]).float()
         mY = torch.from_numpy(self.Y[index]).float()
-
         return mX, mY
     
     def __len__(self):
@@ -31,11 +30,13 @@ def sp_loss(fla_pred, target, gwe):
     we *= wwe
     
     loss = 0
-    
+    target = F.max_pool1d(target,9,9)
+
     for idx, (out, fl_target) in enumerate(zip(fla_pred,target)):
         twe = we.view(-1,1).repeat(1, fl_target.size(1)).type(torch.cuda.FloatTensor)
         ttwe = twe * fl_target.data + (1 - fl_target.data) * wwe
         loss_fn = nn.BCEWithLogitsLoss(weight=ttwe, size_average=True)
+        print(target.shape)    
         loss += loss_fn(torch.squeeze(out), fl_target)
  
     return loss

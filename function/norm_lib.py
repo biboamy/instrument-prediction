@@ -6,7 +6,7 @@ def RoW_norm(data, fn, fqs=128):
 
     if True:
         st = time.time()
-        print 'Get std and average'
+        print ('Get std and average')
         
         common_sum = 0
         square_sum = 0
@@ -14,7 +14,7 @@ def RoW_norm(data, fn, fqs=128):
         # remove zero padding
         fle = data.shape[2]
         tfle = 0
-        for i in xrange(len(data)):
+        for i in range(len(data)):
             tfle += (data[i].sum(-1).sum(0)!=0).astype('int').sum()
             common_sum += data[i].sum(-1).sum(-1)
             square_sum += (data[i]**2).sum(-1).sum(-1)
@@ -26,7 +26,7 @@ def RoW_norm(data, fn, fqs=128):
 
         np.save(fn, [common_avg, std])
         
-        print time.time() - st
+        print (time.time() - st)
         return common_avg, std
 
 

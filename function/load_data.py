@@ -14,7 +14,7 @@ def norm(avg, std, data, size):
     return data
 
 def load():
-    path = 'ex_data/cqt/'
+    path = 'data/ex_data/'
       
     Xte = np.load(path+'xte.npy')
     Xtr = np.load(path+'xtr.npy')
@@ -39,13 +39,13 @@ def load():
         else: 
             Xtr = np.concatenate((Xtr, Xtr_p),3)
             Xte = np.concatenate((Xte, Xte_p),3)
-    
+
      #avg std
     return Xtr, Ytr, Xte, Yte, avg, std
 
 def load_te(avg,std):
-    Xte = np.load('ex_data/cqt/xte.npy')
-    Yte = np.load('ex_data/cqt/yte.npy')
+    Xte = np.load('data/ex_data/xte.npy')
+    Yte = np.load('data/ex_data/yte.npy')
     Xte = np.expand_dims(Xte, axis=3)
     Xte = norm(avg, std, Xte, Xte.shape)
     if status == 'har':

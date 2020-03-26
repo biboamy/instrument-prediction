@@ -124,12 +124,11 @@ def load_te_mp3(name,avg, std):
         xdata = np.transpose(f)
         x = [] 
         length = int(np.ceil((int(len(xdata)/s)+1)*s))
-
         app = np.zeros((length-xdata.shape[0],xdata.shape[1]))
         xdata = np.concatenate((xdata,app),0)
         for i in range(int(length/s)):
             data=xdata[int(i*s):int(i*s+s)]
-            x.append(np.transpose(data[:312,:]))
+            x.append(np.transpose(data[:816,:]))
 
         return np.array(x)
 
