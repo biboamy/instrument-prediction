@@ -1,1 +1,1 @@
-Please download the file from [https://drive.google.com/file/d/1omfQu8S3KnOR5w4fd6NAdUamtbcutEMY/view?usp=sharing](https://drive.google.com/file/d/1omfQu8S3KnOR5w4fd6NAdUamtbcutEMY/view?usp=sharing) and put the data into this folder.
+Please download the file from [https://drive.google.com/file/d/1omfQu8S3KnOR5w4fd6NAdUamtbcutEMY/view?usp=sharing](https://drive.google.com/uc?export=download&id=1M25vj6hjCxOfuvl8VP07O_JFoTHRICdn) and put the data into this folder.
